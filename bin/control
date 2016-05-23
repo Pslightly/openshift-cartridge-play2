@@ -121,7 +121,7 @@ function build {
       nohup gear build && nohup gear start &
     else
       echo "Starting Play activator build process"
-      activator clean dist -Duser.home=${OPENSHIFT_DATA_DIR} &
+      activator dist -Duser.home=${OPENSHIFT_DATA_DIR} &
       local B_BUILD_PID=$!
       echo "$B_BUILD_PID" > $PLAY2_PID_ACTIVATOR_BUILD
       inc_num_build
