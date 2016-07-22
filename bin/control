@@ -47,8 +47,6 @@ function start {
     if [ -f "$S_DIST_FILE" ]; then
       local S_BASENAME_FILE=$(basename "$S_DIST_FILE")
       local S_DIST_UNZIPPED="$PLAY2_DEPLOY_PATH/${S_BASENAME_FILE%.*}"
-      rm -fR $S_DIST_UNZIPPED
-      unzip "$S_DIST_FILE" -d "$PLAY2_DEPLOY_PATH"
       local S_BIN_NAME=$(find $S_DIST_UNZIPPED/bin -type f | grep -v '.bat' | head -n 1)
       local S_PLAY_CRYPTO_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9_?' | head -c30)
       local S_APPLICATION_CONF=$(find $S_DIST_UNZIPPED -type f -name application.conf | head -n 1)
@@ -121,12 +119,12 @@ function build {
       nohup gear build && nohup gear start &
     else
       echo "Starting Play activator build process"
-      activator dist -Duser.home=${OPENSHIFT_DATA_DIR} &
+      activator stage -Duser.home=${OPENSHIFT_DATA_DIR} &
       local B_BUILD_PID=$!
       echo "$B_BUILD_PID" > $PLAY2_PID_ACTIVATOR_BUILD
       inc_num_build
       wait
-      local B_DIST_FILE=$(find `pwd`/target/universal -name *.zip)
+      local B_DIST_FILE=$(find `pwd`/target/universal/stage/bin -name play-scala)
       echo "$B_DIST_FILE" > $PLAY2_DIST_FILE
     fi
   else
